@@ -1,0 +1,28 @@
+{
+  "appId": "documents",
+  "name": "Documents",
+  "version": "0.1.0",
+  "description": "Rich document editor with folders and nested pages",
+  "dataContract": [
+    {
+      "entityName": "folders",
+      "fields": [
+        { "name": "title", "type": "text", "required": true },
+        { "name": "parent_id", "type": "entity_link", "references": { "entity": "folders", "field": "id" } },
+        { "name": "position", "type": "number" },
+        { "name": "icon", "type": "text" }
+      ]
+    },
+    {
+      "entityName": "documents",
+      "fields": [
+        { "name": "title", "type": "text", "required": true },
+        { "name": "content", "type": "json" },
+        { "name": "folder_id", "type": "entity_link", "references": { "entity": "folders", "field": "id" } },
+        { "name": "position", "type": "number" },
+        { "name": "icon", "type": "text" },
+        { "name": "is_favorite", "type": "boolean" }
+      ]
+    }
+  ]
+}
