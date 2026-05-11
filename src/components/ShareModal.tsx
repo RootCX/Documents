@@ -36,8 +36,9 @@ export function ShareModal({ documentId, onClose }: Props) {
     setWorking(true);
     try {
       const share = await client.createPublicShare(APP_ID, { context: { document_id: documentId } });
-      setFreshUrl(share.url);
-      await navigator.clipboard.writeText(share.url);
+      const url = `${window.location.origin}/share/${share.token}`;
+      setFreshUrl(url);
+      await navigator.clipboard.writeText(url);
       toast.success("Public link created and copied");
       await refresh();
     } catch (e) {
