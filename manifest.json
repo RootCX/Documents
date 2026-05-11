@@ -24,5 +24,23 @@
         { "name": "is_favorite", "type": "boolean" }
       ]
     }
-  ]
+  ],
+  "permissions": {
+    "permissions": [
+      { "key": "folders.create", "description": "Create folders" },
+      { "key": "folders.read", "description": "View folders" },
+      { "key": "folders.update", "description": "Edit folders" },
+      { "key": "folders.delete", "description": "Delete folders" },
+      { "key": "documents.create", "description": "Create documents" },
+      { "key": "documents.read", "description": "View documents" },
+      { "key": "documents.update", "description": "Edit documents" },
+      { "key": "documents.delete", "description": "Delete documents" },
+      { "key": "public.share", "description": "Create public share links for documents" }
+    ]
+  },
+  "public": {
+    "rpcs": [
+      { "name": "get_public_document", "scope": ["document_id"] }
+    ]
+  }
 }

@@ -212,7 +212,7 @@ export function DocumentSidebar({
           </div>
         }
       >
-        <ScrollArea className="flex-1">
+        <ScrollArea className="flex-1 overflow-x-hidden">
           {favorites.length > 0 && (
             <SidebarSection title="Favorites" collapsible defaultOpen>
               {favorites.map((doc) => (
@@ -334,7 +334,7 @@ function DocumentItem({ doc, level }: { doc: Document; level: number }) {
     <div
       ref={ref}
       className={cn(
-        "group flex items-center gap-1.5 rounded-md px-2 py-1 text-sm transition-colors cursor-grab active:cursor-grabbing",
+        "group flex w-full items-center gap-1.5 rounded-md px-2 py-1 text-sm transition-colors cursor-grab active:cursor-grabbing",
         isActive ? "bg-accent text-accent-foreground" : "text-foreground hover:bg-accent/50",
         isDragging && "opacity-40"
       )}
@@ -344,19 +344,19 @@ function DocumentItem({ doc, level }: { doc: Document; level: number }) {
       {isRenaming ? (
         <InlineRenameInput id={doc.id} isFolder={false} />
       ) : (
-        <NavLink to={`/doc/${doc.id}`} className="flex-1 truncate" draggable={false}>
+        <NavLink to={`/doc/${doc.id}`} className="min-w-0 flex-1 truncate" draggable={false}>
           {doc.icon ? `${doc.icon} ` : ""}{doc.title}
         </NavLink>
       )}
       <div
-        className="flex shrink-0 items-center opacity-0 transition-opacity group-hover:opacity-100"
+        className="flex shrink-0 items-center"
         onMouseDown={stopDrag}
         onPointerDown={stopDrag}
         draggable={false}
       >
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="rounded p-0.5 hover:bg-accent">
+            <button className="rounded p-0.5 opacity-0 group-hover:opacity-100 hover:bg-accent transition-opacity">
               <IconDots className="h-3.5 w-3.5" />
             </button>
           </DropdownMenuTrigger>
@@ -484,11 +484,11 @@ function FolderItem({ folder, level }: { folder: Folder; level: number }) {
   }, [folder.id, level, resetDrop, isExpandedRef, dropStateRef, onMoveRef, expandRef]);
 
   return (
-    <div>
+    <div className="overflow-hidden">
       <div
         ref={ref}
         className={cn(
-          "group flex items-center gap-1 rounded-md px-2 py-1 text-sm text-foreground transition-all hover:bg-accent/50",
+          "group flex w-full items-center gap-1 rounded-md px-2 py-1 text-sm text-foreground transition-all hover:bg-accent/50",
           dropState === "make-child" && "bg-primary/10 ring-1 ring-inset ring-primary/50"
         )}
         style={indentStyle(level)}
@@ -506,21 +506,21 @@ function FolderItem({ folder, level }: { folder: Folder; level: number }) {
         {isRenaming ? (
           <InlineRenameInput id={folder.id} isFolder />
         ) : (
-          <span className="flex-1 cursor-pointer truncate" onClick={() => toggleFolder(folder.id)}>
+          <span className="min-w-0 flex-1 cursor-pointer truncate" onClick={() => toggleFolder(folder.id)}>
             {folder.icon ? `${folder.icon} ` : ""}{folder.title}
           </span>
         )}
-        <div className="flex shrink-0 items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
+        <div className="flex shrink-0 items-center gap-0.5">
           <button
             onClick={() => onCreateDocument(folder.id)}
-            className="rounded p-0.5 hover:bg-accent"
+            className="rounded p-0.5 opacity-0 group-hover:opacity-100 hover:bg-accent transition-opacity"
             title="New page"
           >
             <IconPlus className="h-3.5 w-3.5" />
           </button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="rounded p-0.5 hover:bg-accent">
+              <button className="rounded p-0.5 opacity-0 group-hover:opacity-100 hover:bg-accent transition-opacity">
                 <IconDots className="h-3.5 w-3.5" />
               </button>
             </DropdownMenuTrigger>

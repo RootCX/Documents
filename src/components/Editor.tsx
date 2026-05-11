@@ -22,6 +22,7 @@ interface EditorProps {
   content: Record<string, unknown> | null;
   onUpdate: (content: Record<string, unknown>) => void;
   className?: string;
+  readOnly?: boolean;
 }
 
 const MARKDOWN_CONTENT_KEYS = ["text", "markdown", "body"] as const;
@@ -36,7 +37,7 @@ function resolveContent(content: Record<string, unknown> | string | null): Recor
   return content;
 }
 
-export function Editor({ content, onUpdate, className }: EditorProps) {
+export function Editor({ content, onUpdate, className, readOnly }: EditorProps) {
   const debouncedUpdate = useDebounce(onUpdate as (...args: unknown[]) => void, 500);
   const prevContentRef = useRef<Record<string, unknown> | null>(null);
   const hasNormalized = useRef(false);
@@ -44,6 +45,7 @@ export function Editor({ content, onUpdate, className }: EditorProps) {
   const initialContent = resolveContent(content);
 
   const editor = useEditor({
+    editable: !readOnly,
     extensions: [
       StarterKit.configure({
         codeBlock: false,
@@ -99,10 +101,12 @@ export function Editor({ content, onUpdate, className }: EditorProps) {
 
   return (
     <div className={cn("relative", className)}>
-      <BubbleMenu editor={editor} tippyOptions={{ duration: 150 }}>
-        <BubbleToolbar editor={editor} />
-      </BubbleMenu>
-      <SlashCommandMenu editor={editor} />
+      {!readOnly && (
+        <BubbleMenu editor={editor} tippyOptions={{ duration: 150 }}>
+          <BubbleToolbar editor={editor} />
+        </BubbleMenu>
+      )}
+      {!readOnly && <SlashCommandMenu editor={editor} />}
       <EditorContent editor={editor} />
     </div>
   );

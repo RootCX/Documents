@@ -1,4 +1,5 @@
-import { useLocation, Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useLocation, Routes, Route, Navigate, useNavigate, useParams } from "react-router-dom";
 import { AuthGate } from "@rootcx/sdk";
 import {
   AppShell,
@@ -15,13 +16,34 @@ import { useFolders, useAllDocuments } from "@/hooks/useDocuments";
 import { DocumentSidebar } from "@/components/DocumentSidebar";
 import { DocumentPage } from "@/pages/DocumentPage";
 import { HomePage } from "@/pages/HomePage";
-import { withToast } from "@/lib/utils";
+import { PublicDocumentPage } from "@/pages/PublicDocumentPage";
+import { withToast, cn } from "@/lib/utils";
+import { ResizeHandle, MIN_WIDTH } from "@/components/ResizeHandle";
+
+function PublicShareRoute() {
+  const { token } = useParams<{ token: string }>();
+  if (!token || !/^[A-Za-z0-9_-]{43}$/.test(token)) {
+    return <Navigate to="/" replace />;
+  }
+  return <PublicDocumentPage token={token} />;
+}
 
 export default function App() {
   return (
-    <AuthGate appTitle="Documents">
-      {({ user, logout }) => <AppContent user={user} logout={logout} />}
-    </AuthGate>
+    <Routes>
+      {/* Public share route: NO AuthGate, NO RuntimeProvider context.
+          PublicDocumentPage builds its own isolated RuntimeClient with
+          persist:false so the share token never lands in localStorage. */}
+      <Route path="/share/:token" element={<><PublicShareRoute /><Toaster /></>} />
+      <Route
+        path="*"
+        element={
+          <AuthGate appTitle="Documents">
+            {({ user, logout }) => <AppContent user={user} logout={logout} />}
+          </AuthGate>
+        }
+      />
+    </Routes>
   );
 }
 
@@ -29,6 +51,8 @@ function AppContent({ user, logout }: { user: { email: string }; logout: () => v
   const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const [sidebarWidth, setSidebarWidth] = useState(MIN_WIDTH);
+  const [isResizing, setIsResizing] = useState(false);
 
   const {
     data: folders,
@@ -79,8 +103,14 @@ function AppContent({ user, logout }: { user: { email: string }; logout: () => v
     withToast(() => updateDocument(id, { folder_id: folderId }), "Failed to move document");
 
   return (
-    <AppShell>
-      <AppShellSidebar>
+    <AppShell sidebarWidth={sidebarWidth}>
+      <AppShellSidebar className={cn("relative", isResizing && "!transition-none")}>
+        <ResizeHandle
+          currentWidth={sidebarWidth}
+          onResize={setSidebarWidth}
+          onResizeStart={() => setIsResizing(true)}
+          onResizeEnd={() => setIsResizing(false)}
+        />
         <DocumentSidebar
           folders={folders}
           documents={documents}
